@@ -49,17 +49,13 @@
       z-index: 100;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
-    .nav a {
-      text-decoration: none;
+    .nav span {
       color: #2d5f8a;
       font-size: 0.78rem;
       font-weight: 500;
       padding: 5px 12px;
       border-radius: 4px;
-      transition: background 0.2s;
-    }
-    .nav a:hover {
-      background: #e8f0f8;
+      background: #f0f5fa;
     }
     /* Info bar */
     .info {
@@ -107,18 +103,19 @@
   </div>
 
   <nav class="nav">
-    <a href="#vis">1. Donut Chart</a>
-    <a href="#vis">2. Streamgraph</a>
-    <a href="#vis">3. Trellis Histogram</a>
-    <a href="#vis">4. Heatmap</a>
-    <a href="#vis">5. Linked Charts</a>
-    <a href="#vis">6. Stacked Bar</a>
+    <span>1. Donut Chart</span>
+    <span>2. Streamgraph</span>
+    <span>3. Trellis Histogram</span>
+    <span>4. Heatmap</span>
+    <span>5. Linked Charts</span>
+    <span>6. Stacked Bar</span>
+    <span>7. Line Chart</span>
   </nav>
 
   <div class="info">
     <strong>Dataset:</strong> HW_III.xlsx &mdash; 43 sales orders (Jan 2021 &ndash; Dec 2022) &nbsp;|&nbsp;
     <strong>Columns:</strong> OrderDate, Region, Rep, Item, Units, Unit Cost, Total &nbsp;|&nbsp;
-    <strong>Charts:</strong> 6 interactive views concatenated in a single Vega-Lite multiview
+    <strong>Charts:</strong> 7 interactive views concatenated in a single Vega-Lite multiview
   </div>
 
   <div class="chart-container">
@@ -323,6 +320,33 @@
               {"field": "Region", "type": "nominal"},
               {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total Sales ($)"},
               {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
+            ]
+          }
+        },
+        {
+          "title": "7. Interactive Line Chart: Monthly Sales Trend per Rep (hover to highlight)",
+          "width": 700,
+          "height": 350,
+          "params": [
+            {"name": "repHover", "select": {"type": "point", "fields": ["Rep"], "on": "pointerover"}}
+          ],
+          "mark": {"type": "line", "point": true, "tooltip": true},
+          "encoding": {
+            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month", "axis": {"format": "%b %Y"}},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+            "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": {"title": "Sales Rep"}},
+            "strokeWidth": {
+              "condition": {"param": "repHover", "empty": false, "value": 4},
+              "value": 1
+            },
+            "opacity": {
+              "condition": {"param": "repHover", "empty": false, "value": 1},
+              "value": 0.3
+            },
+            "tooltip": [
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
             ]
           }
         }
