@@ -3,496 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELL880A Assignment 3 — Vega-Lite Visualizations</title>
-  <meta name="description" content="Interactive Vega-Lite visualizations for ELL880A Assignment 3 — Sales Orders Analysis">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>ELL880A Assignment 3 - Vega-Lite Visualizations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-card: #1e293b;
-      --bg-card-hover: #253449;
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.25);
-      --accent-light: #818cf8;
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --border: #334155;
-      --success: #22d3ee;
-      --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
-      --gradient-2: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-      --shadow-lg: 0 20px 50px rgba(0,0,0,0.4);
-      --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
-      --radius: 16px;
-    }
-
-    html { scroll-behavior: smooth; }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.6;
-      overflow-x: hidden;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
     }
-
-    /* ===== NAVBAR ===== */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      transition: all 0.3s ease;
-    }
-    .navbar.scrolled {
-      background: rgba(15, 23, 42, 0.95);
-      box-shadow: 0 4px 30px rgba(0,0,0,0.3);
-    }
-    .nav-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-    .nav-brand .logo {
-      width: 32px;
-      height: 32px;
-      background: var(--gradient-1);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-    .nav-links {
-      display: flex;
-      gap: 4px;
-      list-style: none;
-      flex-wrap: wrap;
-    }
-    .nav-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-    }
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--accent-light);
-      background: var(--accent-glow);
-    }
-
-    /* ===== HERO ===== */
-    .hero {
-      padding: 140px 24px 80px;
-      text-align: center;
-      background: var(--gradient-2);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: -200px;
-      right: -200px;
-      width: 600px;
-      height: 600px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero::after {
-      content: '';
-      position: absolute;
-      bottom: -150px;
-      left: -150px;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--accent-light);
-      padding: 6px 16px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .hero p {
-      font-size: 1.1rem;
-      color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto 32px;
-    }
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-    .stat {
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #1e3a5f, #2d5f8a);
+      color: #fff;
+      padding: 28px 0 22px;
       text-align: center;
     }
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 800;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .stat-label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 2px;
-    }
-
-    /* ===== MAIN CONTAINER ===== */
-    .main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px 24px 80px;
-    }
-
-    /* ===== SECTION HEADER ===== */
-    .section-header {
-      text-align: center;
-      margin-bottom: 48px;
-    }
-    .section-header h2 {
-      font-size: 1.8rem;
+    .header h1 {
+      font-size: 1.6rem;
       font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .section-header p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-    }
-
-    /* ===== CHART CARDS ===== */
-    .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 40px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    .chart-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-card);
-      border-color: var(--accent);
-    }
-    .card-header {
-      padding: 24px 28px 16px;
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .card-number {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      background: var(--gradient-1);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      color: white;
-    }
-    .card-info h3 {
-      font-size: 1.15rem;
-      font-weight: 600;
       margin-bottom: 4px;
+      letter-spacing: 0.3px;
     }
-    .card-info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      font-weight: 400;
     }
-    .card-tag {
-      display: inline-block;
-      background: rgba(34, 211, 238, 0.12);
-      color: var(--success);
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 50px;
-      margin-top: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .card-body {
-      padding: 28px;
+    /* Nav */
+    .nav {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 20px;
       display: flex;
       justify-content: center;
-      overflow-x: auto;
+      flex-wrap: wrap;
+      gap: 6px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
-    .card-body .vega-embed { width: 100%; }
-
-    /* ===== FOOTER ===== */
+    .nav a {
+      text-decoration: none;
+      color: #2d5f8a;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .nav a:hover {
+      background: #e8f0f8;
+    }
+    /* Info bar */
+    .info {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 14px 20px;
+      background: #fff;
+      border-radius: 8px;
+      border-left: 4px solid #2d5f8a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #555;
+    }
+    .info strong { color: #333; }
+    /* Chart area */
+    .chart-container {
+      max-width: 960px;
+      margin: 20px auto 30px;
+      background: #fff;
+      border-radius: 10px;
+      padding: 30px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
+    /* Footer */
     .footer {
       text-align: center;
-      padding: 40px 24px;
-      border-top: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-    .footer a {
-      color: var(--accent-light);
-      text-decoration: none;
-    }
-    .footer a:hover { text-decoration: underline; }
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-bottom: 12px;
-    }
-
-    /* ===== SCROLLBAR ===== */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-primary); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
-
-    /* ===== ANIMATIONS ===== */
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .nav-links { display: none; }
-      .hero { padding: 120px 16px 60px; }
-      .hero-stats { gap: 24px; }
-      .main { padding: 40px 12px 60px; }
-      .card-header { padding: 16px 20px 12px; }
-      .card-body { padding: 16px; }
-    }
-
-    /* Override vega-embed action links for dark theme */
-    .vega-embed .vega-actions a {
-      color: var(--text-muted) !important;
-      font-size: 0.75rem !important;
-    }
-    .vega-embed .vega-actions a:hover {
-      color: var(--accent-light) !important;
+      padding: 18px;
+      font-size: 0.78rem;
+      color: #999;
+      border-top: 1px solid #e0e0e0;
+      background: #fff;
     }
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>ELL880A — Assignment 3</h1>
+    <p>Visualizing Sales Data using Vega-Lite &middot; Multiview Dashboard</p>
+  </div>
 
-  <!-- NAVBAR -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-inner">
-      <a href="#" class="nav-brand">
-        <span class="logo">📊</span>
-        <span>ELL880A</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#chart1">Donut</a></li>
-        <li><a href="#chart2">Stream</a></li>
-        <li><a href="#chart3">Trellis</a></li>
-        <li><a href="#chart4">Heatmap</a></li>
-        <li><a href="#chart5">Linked</a></li>
-        <li><a href="#chart6">Stacked</a></li>
-        <li><a href="#chart7">Trends</a></li>
-      </ul>
-    </div>
+  <nav class="nav">
+    <a href="#vis">1. Donut Chart</a>
+    <a href="#vis">2. Streamgraph</a>
+    <a href="#vis">3. Trellis Histogram</a>
+    <a href="#vis">4. Heatmap</a>
+    <a href="#vis">5. Linked Charts</a>
+    <a href="#vis">6. Stacked Bar</a>
+    <a href="#vis">7. Line Chart</a>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-badge">✦ ELL880A — Visualization Course</div>
-      <h1>Sales Orders Data Visualization</h1>
-      <p>An interactive exploration of the HW_III dataset using Vega-Lite, featuring 7 distinct chart types with rich interactions.</p>
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="stat-value">7</div>
-          <div class="stat-label">Visualizations</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">43</div>
-          <div class="stat-label">Data Records</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">5</div>
-          <div class="stat-label">Interaction Types</div>
-        </div>
-        <div class="stat">
-          <div class="stat-value">6</div>
-          <div class="stat-label">Chart Types</div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="info">
+    <strong>Dataset:</strong> HW_III.xlsx &mdash; 43 sales orders (Jan 2021 &ndash; Dec 2022) &nbsp;|&nbsp;
+    <strong>Columns:</strong> OrderDate, Region, Rep, Item, Units, Unit Cost, Total &nbsp;|&nbsp;
+    <strong>Charts:</strong> 7 interactive views concatenated in a single Vega-Lite multiview
+  </div>
 
-  <!-- MAIN CONTENT -->
-  <main class="main">
-    <div class="section-header">
-      <h2>Interactive Visualizations</h2>
-      <p>All charts are built with Vega-Lite v5 and concatenated in a multiview layout. Hover, click, and drag to interact.</p>
-    </div>
-
-    <!-- Multiview (all 7 concatenated) -->
-    <div id="multiview" style="display:none;"></div>
-
-    <!-- Chart 1 -->
-    <div class="chart-card fade-in" id="chart1">
-      <div class="card-header">
-        <div class="card-number">1</div>
-        <div class="card-info">
-          <h3>Donut Chart — Total Sales by Rep</h3>
-          <p>Proportional breakdown of total revenue generated by each sales representative.</p>
-          <span class="card-tag">🖱 Tooltip on Hover</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis1"></div></div>
-    </div>
-
-    <!-- Chart 2 -->
-    <div class="chart-card fade-in" id="chart2">
-      <div class="card-header">
-        <div class="card-number">2</div>
-        <div class="card-info">
-          <h3>Streamgraph — Total Sales Over Time by Item</h3>
-          <p>How revenue from each product category flows over time, stacked symmetrically.</p>
-          <span class="card-tag">🖱 Tooltip on Hover</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis2"></div></div>
-    </div>
-
-    <!-- Chart 3 -->
-    <div class="chart-card fade-in" id="chart3">
-      <div class="card-header">
-        <div class="card-number">3</div>
-        <div class="card-info">
-          <h3>Trellis Histogram — Units Distribution by Item</h3>
-          <p>Faceted histograms showing units sold per product, with a red dashed mean overlay.</p>
-          <span class="card-tag">📏 Mean Overlay</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis3"></div></div>
-    </div>
-
-    <!-- Chart 4 -->
-    <div class="chart-card fade-in" id="chart4">
-      <div class="card-header">
-        <div class="card-number">4</div>
-        <div class="card-info">
-          <h3>Heatmap — Total Sales by Rep × Item</h3>
-          <p>Matrix view of which reps sell which products most, by total revenue.</p>
-          <span class="card-tag">🖱 Click to Highlight Row</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis4"></div></div>
-    </div>
-
-    <!-- Chart 5 -->
-    <div class="chart-card fade-in" id="chart5">
-      <div class="card-header">
-        <div class="card-number">5</div>
-        <div class="card-info">
-          <h3>Linked Bar Charts — Brush to Filter</h3>
-          <p>Drag a date range on the top chart to dynamically filter the rep breakdown below.</p>
-          <span class="card-tag">🔗 Brush + Linked Filter</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis5"></div></div>
-    </div>
-
-    <!-- Chart 6 -->
-    <div class="chart-card fade-in" id="chart6">
-      <div class="card-header">
-        <div class="card-number">6</div>
-        <div class="card-info">
-          <h3>Stacked Bar — Sales by Item per Region</h3>
-          <p>Stacked bars showing each region's contribution to item-level sales.</p>
-          <span class="card-tag">🖱 Click Legend to Filter</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis6"></div></div>
-    </div>
-
-    <!-- Chart 7 -->
-    <div class="chart-card fade-in" id="chart7">
-      <div class="card-header">
-        <div class="card-number">7</div>
-        <div class="card-info">
-          <h3>Line Chart — Monthly Sales Trend per Rep</h3>
-          <p>Sales trajectories of each rep over time. Hover a line to bring it into focus.</p>
-          <span class="card-tag">🖱 Hover to Highlight</span>
-        </div>
-      </div>
-      <div class="card-body"><div id="vis7"></div></div>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-links">
-      <a href="https://github.com/Dhruv2605/ELL880A-Assignment3" target="_blank">GitHub Repo</a>
-      <a href="https://vega.github.io/vega-lite/" target="_blank">Vega-Lite Docs</a>
-    </div>
-    <p>ELL880A — Visualization &middot; Assignment 3 &middot; IIT Delhi &middot; April 2026</p>
-  </footer>
+  <div class="chart-container">
+    <div id="vis"></div>
+  </div>
 
   <script>
-    // ===== DATA =====
     var data = [
       {"OrderDate":"2021-01-06","Region":"East","Rep":"Jones","Item":"Pencil","Units":95,"UnitCost":1.99,"Total":189.05},
       {"OrderDate":"2021-01-23","Region":"Central","Rep":"Kivell","Item":"Binder","Units":50,"UnitCost":19.99,"Total":999.50},
@@ -539,222 +173,203 @@
       {"OrderDate":"2022-12-21","Region":"Central","Rep":"Andrews","Item":"Binder","Units":28,"UnitCost":4.99,"Total":139.72}
     ];
 
-    var baseData = {"values": data};
-    var darkConfig = {
-      "background": "transparent",
-      "font": "Inter",
-      "title": {"color": "#f1f5f9", "fontSize": 15, "fontWeight": 600, "subtitleColor": "#94a3b8"},
-      "axis": {"labelColor": "#94a3b8", "titleColor": "#cbd5e1", "gridColor": "#334155", "domainColor": "#475569", "labelFontSize": 11, "titleFontSize": 13},
-      "legend": {"labelColor": "#cbd5e1", "titleColor": "#f1f5f9"},
-      "view": {"stroke": "transparent"},
-      "range": {"category": ["#6366f1","#22d3ee","#a855f7","#f59e0b","#10b981","#f43f5e","#3b82f6","#ec4899","#14b8a6","#f97316"]}
-    };
-    var embedOpts = {actions: {export: true, source: false, compiled: false, editor: false}, config: darkConfig};
-
-    // ===== INDIVIDUAL CHART SPECS =====
-
-    // 1. Donut
-    vegaEmbed('#vis1', {
+    var spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData, "width": 420, "height": 420,
-      "mark": {"type": "arc", "innerRadius": 90, "tooltip": true},
-      "encoding": {
-        "theta": {"field": "Total", "type": "quantitative", "aggregate": "sum"},
-        "color": {"field": "Rep", "type": "nominal", "legend": {"title": "Sales Rep"}},
-        "tooltip": [
-          {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
-          {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)", "format": ",.2f"}
-        ]
-      }
-    }, embedOpts);
-
-    // 2. Streamgraph
-    vegaEmbed('#vis2', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData, "width": 750, "height": 350,
-      "mark": {"type": "area", "interpolate": "basis", "tooltip": true},
-      "encoding": {
-        "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date", "axis": {"format": "%b %Y"}},
-        "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "stack": "center", "title": "Total ($)"},
-        "color": {"field": "Item", "type": "nominal", "legend": {"title": "Item"}},
-        "tooltip": [
-          {"field": "Item", "type": "nominal"},
-          {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"},
-          {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"}
-        ]
-      }
-    }, embedOpts);
-
-    // 3. Trellis Histogram with mean overlay
-    vegaEmbed('#vis3', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData,
-      "columns": 3,
-      "facet": {"field": "Item", "type": "nominal", "title": "Item"},
-      "spec": {
-        "width": 210, "height": 150,
-        "layer": [
-          {
-            "mark": {"type": "bar", "tooltip": true},
-            "encoding": {
-              "x": {"field": "Units", "type": "quantitative", "bin": {"maxbins": 10}, "title": "Units"},
-              "y": {"aggregate": "count", "type": "quantitative", "title": "Count"},
-              "color": {"field": "Item", "type": "nominal", "legend": null},
-              "tooltip": [
-                {"field": "Units", "type": "quantitative", "bin": true, "title": "Units Range"},
-                {"aggregate": "count", "type": "quantitative", "title": "Count"}
-              ]
-            }
-          },
-          {
-            "mark": {"type": "rule", "color": "#f43f5e", "strokeWidth": 2.5, "strokeDash": [6,3]},
-            "encoding": {
-              "x": {"field": "Units", "type": "quantitative", "aggregate": "mean"},
-              "tooltip": [{"field": "Units", "type": "quantitative", "aggregate": "mean", "title": "Mean Units", "format": ".1f"}]
-            }
-          }
-        ]
-      }
-    }, embedOpts);
-
-    // 4. Heatmap
-    vegaEmbed('#vis4', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData, "width": 520, "height": 350,
-      "params": [{"name": "cellSelect", "select": {"type": "point", "encodings": ["y"]}}],
-      "mark": {"type": "rect", "tooltip": true},
-      "encoding": {
-        "x": {"field": "Item", "type": "nominal", "title": "Item"},
-        "y": {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
-        "color": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total ($)", "scale": {"scheme": "blues"}},
-        "opacity": {"condition": {"param": "cellSelect", "value": 1}, "value": 0.4},
-        "tooltip": [
-          {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
-          {"field": "Item", "type": "nominal"},
-          {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"},
-          {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
-        ]
-      }
-    }, embedOpts);
-
-    // 5. Linked brush
-    vegaEmbed('#vis5', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData,
+      "title": {"text": "Sales Orders Analysis (HW_III Data)", "fontSize": 20, "anchor": "middle"},
+      "data": {"values": data},
       "vconcat": [
         {
-          "width": 720, "height": 240,
-          "params": [{"name": "brush", "select": {"type": "interval", "encodings": ["x"]}}],
-          "mark": {"type": "bar", "tooltip": true},
+          "title": "1. Donut Chart: Total Sales by Rep",
+          "width": 400,
+          "height": 400,
+          "mark": {"type": "arc", "innerRadius": 80, "tooltip": true},
           "encoding": {
-            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date"},
-            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total ($)"},
-            "color": {"field": "Region", "type": "nominal", "legend": {"title": "Region"}},
+            "theta": {"field": "Total", "type": "quantitative", "aggregate": "sum"},
+            "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": {"title": "Sales Rep"}},
             "tooltip": [
-              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
-              {"field": "Region", "type": "nominal"},
-              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)", "format": ",.2f"}
             ]
           }
         },
         {
-          "width": 720, "height": 160,
-          "title": "Filtered: Total by Rep (from brushed date range)",
-          "transform": [{"filter": {"param": "brush"}}],
-          "mark": {"type": "bar", "tooltip": true},
+          "title": "2. Streamgraph: Total Sales Over Time by Item",
+          "width": 700,
+          "height": 350,
+          "mark": {"type": "area", "interpolate": "basis"},
           "encoding": {
-            "x": {"field": "Rep", "type": "nominal", "sort": "-y", "title": "Sales Rep"},
-            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total ($)"},
-            "color": {"field": "Rep", "type": "nominal", "legend": null},
+            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date", "axis": {"format": "%b %Y"}},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "stack": "center", "title": "Total ($)"},
+            "color": {"field": "Item", "type": "nominal", "scale": {"scheme": "category10"}, "legend": {"title": "Item"}},
+            "tooltip": [
+              {"field": "Item", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"},
+              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"}
+            ]
+          }
+        },
+        {
+          "title": "3. Trellis Histogram: Units Distribution by Item (with Mean Overlay)",
+          "columns": 3,
+          "facet": {"field": "Item", "type": "nominal", "title": "Item"},
+          "spec": {
+            "width": 200,
+            "height": 150,
+            "layer": [
+              {
+                "mark": {"type": "bar", "tooltip": true},
+                "encoding": {
+                  "x": {"field": "Units", "type": "quantitative", "bin": {"maxbins": 10}, "title": "Units"},
+                  "y": {"aggregate": "count", "type": "quantitative", "title": "Count"},
+                  "color": {"field": "Item", "type": "nominal", "legend": null, "scale": {"scheme": "set2"}},
+                  "tooltip": [
+                    {"field": "Units", "type": "quantitative", "bin": true, "title": "Units Range"},
+                    {"aggregate": "count", "type": "quantitative", "title": "Count"}
+                  ]
+                }
+              },
+              {
+                "mark": {"type": "rule", "color": "red", "strokeWidth": 2, "strokeDash": [4,4]},
+                "encoding": {
+                  "x": {"field": "Units", "type": "quantitative", "aggregate": "mean"},
+                  "tooltip": [
+                    {"field": "Units", "type": "quantitative", "aggregate": "mean", "title": "Mean Units", "format": ".1f"}
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "title": "4. Interactive Heatmap: Total Sales by Rep and Item (click to highlight row)",
+          "width": 500,
+          "height": 350,
+          "params": [
+            {"name": "cellSelect", "select": {"type": "point", "encodings": ["y"]}}
+          ],
+          "mark": {"type": "rect", "tooltip": true},
+          "encoding": {
+            "x": {"field": "Item", "type": "nominal", "title": "Item"},
+            "y": {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+            "color": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)", "scale": {"scheme": "blues"}},
+            "opacity": {
+              "condition": {"param": "cellSelect", "value": 1},
+              "value": 0.4
+            },
             "tooltip": [
               {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "Item", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total Sales ($)"},
+              {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
+            ]
+          }
+        },
+        {
+          "title": "5. Interactive Linked Charts: Drag date range to filter Rep breakdown",
+          "vconcat": [
+            {
+              "width": 700,
+              "height": 250,
+              "params": [
+                {"name": "brush", "select": {"type": "interval", "encodings": ["x"]}}
+              ],
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date"},
+                "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+                "color": {"field": "Region", "type": "nominal", "scale": {"scheme": "accent"}, "legend": {"title": "Region"}},
+                "tooltip": [
+                  {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
+                  {"field": "Region", "type": "nominal"},
+                  {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+                ]
+              }
+            },
+            {
+              "width": 700,
+              "height": 150,
+              "title": "Filtered: Total by Rep (from brushed date range above)",
+              "transform": [{"filter": {"param": "brush"}}],
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "Rep", "type": "nominal", "sort": "-y", "title": "Sales Rep"},
+                "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+                "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": null},
+                "tooltip": [
+                  {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+                  {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "6. Interactive Stacked Bar: Sales by Item per Region (click legend to filter)",
+          "width": 600,
+          "height": 300,
+          "params": [
+            {"name": "regionClick", "select": {"type": "point", "fields": ["Region"]}, "bind": "legend"}
+          ],
+          "mark": {"type": "bar", "tooltip": true, "cornerRadiusTopLeft": 4, "cornerRadiusTopRight": 4},
+          "encoding": {
+            "x": {"field": "Item", "type": "nominal", "title": "Item", "sort": "-y"},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+            "color": {"field": "Region", "type": "nominal", "scale": {"scheme": "dark2"}, "legend": {"title": "Region (click to filter)"}},
+            "opacity": {
+              "condition": {"param": "regionClick", "value": 1},
+              "value": 0.2
+            },
+            "tooltip": [
+              {"field": "Item", "type": "nominal"},
+              {"field": "Region", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total Sales ($)"},
+              {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
+            ]
+          }
+        },
+        {
+          "title": "7. Interactive Line Chart: Monthly Sales Trend per Rep (hover to highlight)",
+          "width": 700,
+          "height": 350,
+          "params": [
+            {"name": "repHover", "select": {"type": "point", "fields": ["Rep"], "on": "pointerover"}}
+          ],
+          "mark": {"type": "line", "point": true, "tooltip": true},
+          "encoding": {
+            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month", "axis": {"format": "%b %Y"}},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+            "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": {"title": "Sales Rep"}},
+            "strokeWidth": {
+              "condition": {"param": "repHover", "empty": false, "value": 4},
+              "value": 1
+            },
+            "opacity": {
+              "condition": {"param": "repHover", "empty": false, "value": 1},
+              "value": 0.3
+            },
+            "tooltip": [
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
               {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
             ]
           }
         }
-      ]
-    }, embedOpts);
-
-    // 6. Stacked bar with legend click
-    vegaEmbed('#vis6', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData, "width": 620, "height": 320,
-      "params": [{"name": "regionClick", "select": {"type": "point", "fields": ["Region"]}, "bind": "legend"}],
-      "mark": {"type": "bar", "tooltip": true, "cornerRadiusTopLeft": 4, "cornerRadiusTopRight": 4},
-      "encoding": {
-        "x": {"field": "Item", "type": "nominal", "title": "Item", "sort": "-y"},
-        "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total ($)"},
-        "color": {"field": "Region", "type": "nominal", "legend": {"title": "Region (click to filter)"}},
-        "opacity": {"condition": {"param": "regionClick", "value": 1}, "value": 0.2},
-        "tooltip": [
-          {"field": "Item", "type": "nominal"},
-          {"field": "Region", "type": "nominal"},
-          {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"},
-          {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
-        ]
+      ],
+      "config": {
+        "font": "Segoe UI",
+        "title": {"fontSize": 16, "fontWeight": "bold"},
+        "view": {"stroke": "transparent"},
+        "axis": {"labelFontSize": 11, "titleFontSize": 13}
       }
-    }, embedOpts);
+    };
 
-    // 7. Line chart with hover highlight
-    vegaEmbed('#vis7', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData, "width": 720, "height": 350,
-      "params": [{"name": "repHover", "select": {"type": "point", "fields": ["Rep"], "on": "pointerover"}}],
-      "mark": {"type": "line", "point": true, "tooltip": true},
-      "encoding": {
-        "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month", "axis": {"format": "%b %Y"}},
-        "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total ($)"},
-        "color": {"field": "Rep", "type": "nominal", "legend": {"title": "Sales Rep"}},
-        "strokeWidth": {"condition": {"param": "repHover", "empty": false, "value": 4}, "value": 1},
-        "opacity": {"condition": {"param": "repHover", "empty": false, "value": 1}, "value": 0.3},
-        "tooltip": [
-          {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
-          {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
-          {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
-        ]
-      }
-    }, embedOpts);
-
-    // Also render the full multiview concatenation (hidden, for spec compliance)
-    vegaEmbed('#multiview', {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": baseData,
-      "vconcat": [
-        {"title":"1","mark":{"type":"arc","innerRadius":80},"encoding":{"theta":{"field":"Total","aggregate":"sum"},"color":{"field":"Rep","type":"nominal"}},"width":300,"height":300},
-        {"title":"2","mark":{"type":"area","interpolate":"basis"},"encoding":{"x":{"field":"OrderDate","type":"temporal","timeUnit":"yearmonth"},"y":{"field":"Total","aggregate":"sum","stack":"center"},"color":{"field":"Item","type":"nominal"}},"width":500,"height":200},
-        {"title":"3","columns":3,"facet":{"field":"Item","type":"nominal"},"spec":{"width":150,"height":100,"layer":[{"mark":"bar","encoding":{"x":{"field":"Units","bin":true},"y":{"aggregate":"count"}}},{"mark":{"type":"rule","color":"red"},"encoding":{"x":{"field":"Units","aggregate":"mean"}}}]}},
-        {"title":"4","mark":"rect","encoding":{"x":{"field":"Item","type":"nominal"},"y":{"field":"Rep","type":"nominal"},"color":{"field":"Total","aggregate":"sum"}},"width":300,"height":200},
-        {"title":"5","mark":"bar","encoding":{"x":{"field":"OrderDate","timeUnit":"yearmonth","type":"temporal"},"y":{"field":"Total","aggregate":"sum"},"color":{"field":"Region","type":"nominal"}},"width":500,"height":200},
-        {"title":"6","mark":"bar","encoding":{"x":{"field":"Item","type":"nominal"},"y":{"field":"Total","aggregate":"sum"},"color":{"field":"Region","type":"nominal"}},"width":500,"height":200},
-        {"title":"7","mark":"line","encoding":{"x":{"field":"OrderDate","timeUnit":"yearmonth","type":"temporal"},"y":{"field":"Total","aggregate":"sum"},"color":{"field":"Rep","type":"nominal"}},"width":500,"height":200}
-      ]
-    }, {actions: false, config: darkConfig});
-
-    // ===== SCROLL ANIMATIONS =====
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) { entry.target.classList.add('visible'); }
-      });
-    }, {threshold: 0.08});
-    document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
-
-    // ===== NAVBAR SCROLL EFFECT =====
-    window.addEventListener('scroll', function() {
-      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
-    });
-
-    // ===== ACTIVE NAV LINK HIGHLIGHT =====
-    var sections = document.querySelectorAll('.chart-card');
-    var navLinks = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', function() {
-      var scrollPos = window.scrollY + 120;
-      sections.forEach(function(sec, i) {
-        if (sec.offsetTop <= scrollPos && sec.offsetTop + sec.offsetHeight > scrollPos) {
-          navLinks.forEach(function(a) { a.classList.remove('active'); });
-          navLinks[i].classList.add('active');
-        }
-      });
+    vegaEmbed('#vis', spec, {actions: true}).catch(function(err) {
+      document.getElementById('vis').innerHTML = '<pre style="color:red;">' + err + '</pre>';
     });
   </script>
+
+  <div class="footer">
+    ELL880A Visualization &middot; Assignment 3 &middot; Vega-Lite Multiview Dashboard
+  </div>
 </body>
 </html>
