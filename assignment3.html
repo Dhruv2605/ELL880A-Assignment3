@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELL880A Assignment 3 - Vega-Lite Visualizations</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>ELL880A - Assignment 3: Vega-Lite Visualizations</h1>
+  <div id="vis"></div>
+
+  <script>
+    var data = [
+      {"OrderDate":"2021-01-06","Region":"East","Rep":"Jones","Item":"Pencil","Units":95,"UnitCost":1.99,"Total":189.05},
+      {"OrderDate":"2021-01-23","Region":"Central","Rep":"Kivell","Item":"Binder","Units":50,"UnitCost":19.99,"Total":999.50},
+      {"OrderDate":"2021-02-09","Region":"Central","Rep":"Jardine","Item":"Pencil","Units":36,"UnitCost":4.99,"Total":179.64},
+      {"OrderDate":"2021-02-26","Region":"Central","Rep":"Gill","Item":"Pen","Units":27,"UnitCost":19.99,"Total":539.73},
+      {"OrderDate":"2021-03-15","Region":"West","Rep":"Sorvino","Item":"Pencil","Units":56,"UnitCost":2.99,"Total":167.44},
+      {"OrderDate":"2021-04-01","Region":"East","Rep":"Jones","Item":"Binder","Units":60,"UnitCost":4.99,"Total":299.40},
+      {"OrderDate":"2021-04-18","Region":"Central","Rep":"Andrews","Item":"Pencil","Units":75,"UnitCost":1.99,"Total":149.25},
+      {"OrderDate":"2021-05-05","Region":"Central","Rep":"Jardine","Item":"Pencil","Units":90,"UnitCost":4.99,"Total":449.10},
+      {"OrderDate":"2021-05-22","Region":"West","Rep":"Thompson","Item":"Pencil","Units":32,"UnitCost":1.99,"Total":63.68},
+      {"OrderDate":"2021-06-08","Region":"East","Rep":"Jones","Item":"Binder","Units":60,"UnitCost":8.99,"Total":539.40},
+      {"OrderDate":"2021-06-25","Region":"Central","Rep":"Morgan","Item":"Pencil","Units":90,"UnitCost":4.99,"Total":449.10},
+      {"OrderDate":"2021-07-12","Region":"East","Rep":"Howard","Item":"Binder","Units":29,"UnitCost":1.99,"Total":57.71},
+      {"OrderDate":"2021-07-29","Region":"East","Rep":"Parent","Item":"Binder","Units":81,"UnitCost":19.99,"Total":1619.19},
+      {"OrderDate":"2021-08-15","Region":"East","Rep":"Jones","Item":"Pencil","Units":35,"UnitCost":4.99,"Total":174.65},
+      {"OrderDate":"2021-09-01","Region":"Central","Rep":"Smith","Item":"Desk","Units":2,"UnitCost":125.00,"Total":250.00},
+      {"OrderDate":"2021-09-18","Region":"East","Rep":"Jones","Item":"Pen Set","Units":16,"UnitCost":15.99,"Total":255.84},
+      {"OrderDate":"2021-10-05","Region":"Central","Rep":"Morgan","Item":"Binder","Units":28,"UnitCost":8.99,"Total":251.72},
+      {"OrderDate":"2021-10-22","Region":"East","Rep":"Jones","Item":"Pen","Units":64,"UnitCost":8.99,"Total":575.36},
+      {"OrderDate":"2021-11-08","Region":"East","Rep":"Parent","Item":"Pen","Units":15,"UnitCost":19.99,"Total":299.85},
+      {"OrderDate":"2021-11-25","Region":"Central","Rep":"Kivell","Item":"Pen Set","Units":96,"UnitCost":4.99,"Total":479.04},
+      {"OrderDate":"2021-12-12","Region":"Central","Rep":"Smith","Item":"Pencil","Units":67,"UnitCost":1.29,"Total":86.43},
+      {"OrderDate":"2021-12-29","Region":"East","Rep":"Parent","Item":"Pen Set","Units":74,"UnitCost":15.99,"Total":1183.26},
+      {"OrderDate":"2022-01-15","Region":"Central","Rep":"Gill","Item":"Binder","Units":46,"UnitCost":8.99,"Total":413.54},
+      {"OrderDate":"2022-02-01","Region":"Central","Rep":"Smith","Item":"Binder","Units":87,"UnitCost":15.00,"Total":1305.00},
+      {"OrderDate":"2022-02-18","Region":"East","Rep":"Jones","Item":"Binder","Units":4,"UnitCost":4.99,"Total":19.96},
+      {"OrderDate":"2022-03-07","Region":"West","Rep":"Sorvino","Item":"Binder","Units":7,"UnitCost":19.99,"Total":139.93},
+      {"OrderDate":"2022-03-24","Region":"Central","Rep":"Jardine","Item":"Pen Set","Units":50,"UnitCost":4.99,"Total":249.50},
+      {"OrderDate":"2022-04-10","Region":"Central","Rep":"Andrews","Item":"Pencil","Units":66,"UnitCost":1.99,"Total":131.34},
+      {"OrderDate":"2022-04-27","Region":"East","Rep":"Howard","Item":"Pen","Units":96,"UnitCost":4.99,"Total":479.04},
+      {"OrderDate":"2022-05-14","Region":"Central","Rep":"Gill","Item":"Pencil","Units":53,"UnitCost":1.29,"Total":68.37},
+      {"OrderDate":"2022-05-31","Region":"Central","Rep":"Gill","Item":"Binder","Units":80,"UnitCost":8.99,"Total":719.20},
+      {"OrderDate":"2022-06-17","Region":"Central","Rep":"Kivell","Item":"Desk","Units":5,"UnitCost":125.00,"Total":625.00},
+      {"OrderDate":"2022-07-04","Region":"East","Rep":"Jones","Item":"Pen Set","Units":62,"UnitCost":4.99,"Total":309.38},
+      {"OrderDate":"2022-07-21","Region":"Central","Rep":"Morgan","Item":"Pen Set","Units":55,"UnitCost":12.49,"Total":686.95},
+      {"OrderDate":"2022-08-07","Region":"Central","Rep":"Kivell","Item":"Pen Set","Units":42,"UnitCost":23.95,"Total":1005.90},
+      {"OrderDate":"2022-08-24","Region":"West","Rep":"Sorvino","Item":"Desk","Units":3,"UnitCost":275.00,"Total":825.00},
+      {"OrderDate":"2022-09-10","Region":"Central","Rep":"Gill","Item":"Pencil","Units":7,"UnitCost":1.29,"Total":9.03},
+      {"OrderDate":"2022-09-27","Region":"West","Rep":"Sorvino","Item":"Pen","Units":76,"UnitCost":1.99,"Total":151.24},
+      {"OrderDate":"2022-10-14","Region":"West","Rep":"Thompson","Item":"Binder","Units":57,"UnitCost":19.99,"Total":1139.43},
+      {"OrderDate":"2022-10-31","Region":"Central","Rep":"Andrews","Item":"Pencil","Units":14,"UnitCost":1.29,"Total":18.06},
+      {"OrderDate":"2022-11-17","Region":"Central","Rep":"Jardine","Item":"Binder","Units":11,"UnitCost":4.99,"Total":54.89},
+      {"OrderDate":"2022-12-04","Region":"Central","Rep":"Jardine","Item":"Binder","Units":94,"UnitCost":19.99,"Total":1879.06},
+      {"OrderDate":"2022-12-21","Region":"Central","Rep":"Andrews","Item":"Binder","Units":28,"UnitCost":4.99,"Total":139.72}
+    ];
+
+    var spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": {"text": "Sales Orders Analysis (HW_III Data)", "fontSize": 20, "anchor": "middle"},
+      "data": {"values": data},
+      "vconcat": [
+        {
+          "title": "1. Donut Chart: Total Sales by Rep",
+          "width": 400,
+          "height": 400,
+          "mark": {"type": "arc", "innerRadius": 80, "tooltip": true},
+          "encoding": {
+            "theta": {"field": "Total", "type": "quantitative", "aggregate": "sum"},
+            "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": {"title": "Sales Rep"}},
+            "tooltip": [
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)", "format": ",.2f"}
+            ]
+          }
+        },
+        {
+          "title": "2. Streamgraph: Total Sales Over Time by Item",
+          "width": 700,
+          "height": 350,
+          "mark": {"type": "area", "interpolate": "basis"},
+          "encoding": {
+            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date", "axis": {"format": "%b %Y"}},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "stack": "center", "title": "Total ($)"},
+            "color": {"field": "Item", "type": "nominal", "scale": {"scheme": "category10"}, "legend": {"title": "Item"}},
+            "tooltip": [
+              {"field": "Item", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"},
+              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"}
+            ]
+          }
+        },
+        {
+          "title": "3. Trellis Histogram: Units Distribution by Item (with Mean Overlay)",
+          "columns": 3,
+          "facet": {"field": "Item", "type": "nominal", "title": "Item"},
+          "spec": {
+            "width": 200,
+            "height": 150,
+            "layer": [
+              {
+                "mark": {"type": "bar", "tooltip": true},
+                "encoding": {
+                  "x": {"field": "Units", "type": "quantitative", "bin": {"maxbins": 10}, "title": "Units"},
+                  "y": {"aggregate": "count", "type": "quantitative", "title": "Count"},
+                  "color": {"field": "Item", "type": "nominal", "legend": null, "scale": {"scheme": "set2"}},
+                  "tooltip": [
+                    {"field": "Units", "type": "quantitative", "bin": true, "title": "Units Range"},
+                    {"aggregate": "count", "type": "quantitative", "title": "Count"}
+                  ]
+                }
+              },
+              {
+                "mark": {"type": "rule", "color": "red", "strokeWidth": 2, "strokeDash": [4,4]},
+                "encoding": {
+                  "x": {"field": "Units", "type": "quantitative", "aggregate": "mean"},
+                  "tooltip": [
+                    {"field": "Units", "type": "quantitative", "aggregate": "mean", "title": "Mean Units", "format": ".1f"}
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "title": "4. Interactive Heatmap: Total Sales by Rep and Item (click to highlight row)",
+          "width": 500,
+          "height": 350,
+          "params": [
+            {"name": "cellSelect", "select": {"type": "point", "encodings": ["y"]}}
+          ],
+          "mark": {"type": "rect", "tooltip": true},
+          "encoding": {
+            "x": {"field": "Item", "type": "nominal", "title": "Item"},
+            "y": {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+            "color": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)", "scale": {"scheme": "blues"}},
+            "opacity": {
+              "condition": {"param": "cellSelect", "value": 1},
+              "value": 0.4
+            },
+            "tooltip": [
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "Item", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total Sales ($)"},
+              {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
+            ]
+          }
+        },
+        {
+          "title": "5. Interactive Linked Charts: Drag date range to filter Rep breakdown",
+          "vconcat": [
+            {
+              "width": 700,
+              "height": 250,
+              "params": [
+                {"name": "brush", "select": {"type": "interval", "encodings": ["x"]}}
+              ],
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Order Date"},
+                "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+                "color": {"field": "Region", "type": "nominal", "scale": {"scheme": "accent"}, "legend": {"title": "Region"}},
+                "tooltip": [
+                  {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
+                  {"field": "Region", "type": "nominal"},
+                  {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+                ]
+              }
+            },
+            {
+              "width": 700,
+              "height": 150,
+              "title": "Filtered: Total by Rep (from brushed date range above)",
+              "transform": [{"filter": {"param": "brush"}}],
+              "mark": {"type": "bar", "tooltip": true},
+              "encoding": {
+                "x": {"field": "Rep", "type": "nominal", "sort": "-y", "title": "Sales Rep"},
+                "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+                "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": null},
+                "tooltip": [
+                  {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+                  {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "title": "6. Interactive Stacked Bar: Sales by Item per Region (click legend to filter)",
+          "width": 600,
+          "height": 300,
+          "params": [
+            {"name": "regionClick", "select": {"type": "point", "fields": ["Region"]}, "bind": "legend"}
+          ],
+          "mark": {"type": "bar", "tooltip": true, "cornerRadiusTopLeft": 4, "cornerRadiusTopRight": 4},
+          "encoding": {
+            "x": {"field": "Item", "type": "nominal", "title": "Item", "sort": "-y"},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+            "color": {"field": "Region", "type": "nominal", "scale": {"scheme": "dark2"}, "legend": {"title": "Region (click to filter)"}},
+            "opacity": {
+              "condition": {"param": "regionClick", "value": 1},
+              "value": 0.2
+            },
+            "tooltip": [
+              {"field": "Item", "type": "nominal"},
+              {"field": "Region", "type": "nominal"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total Sales ($)"},
+              {"field": "Units", "type": "quantitative", "aggregate": "sum", "title": "Total Units"}
+            ]
+          }
+        },
+        {
+          "title": "7. Interactive Line Chart: Monthly Sales Trend per Rep (hover to highlight)",
+          "width": 700,
+          "height": 350,
+          "params": [
+            {"name": "repHover", "select": {"type": "point", "fields": ["Rep"], "on": "pointerover"}}
+          ],
+          "mark": {"type": "line", "point": true, "tooltip": true},
+          "encoding": {
+            "x": {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month", "axis": {"format": "%b %Y"}},
+            "y": {"field": "Total", "type": "quantitative", "aggregate": "sum", "title": "Total Sales ($)"},
+            "color": {"field": "Rep", "type": "nominal", "scale": {"scheme": "tableau10"}, "legend": {"title": "Sales Rep"}},
+            "strokeWidth": {
+              "condition": {"param": "repHover", "empty": false, "value": 4},
+              "value": 1
+            },
+            "opacity": {
+              "condition": {"param": "repHover", "empty": false, "value": 1},
+              "value": 0.3
+            },
+            "tooltip": [
+              {"field": "Rep", "type": "nominal", "title": "Sales Rep"},
+              {"field": "OrderDate", "type": "temporal", "timeUnit": "yearmonth", "title": "Month"},
+              {"field": "Total", "type": "quantitative", "aggregate": "sum", "format": ",.2f", "title": "Total ($)"}
+            ]
+          }
+        }
+      ],
+      "config": {
+        "font": "Segoe UI",
+        "title": {"fontSize": 16, "fontWeight": "bold"},
+        "view": {"stroke": "transparent"},
+        "axis": {"labelFontSize": 11, "titleFontSize": 13}
+      }
+    };
+
+    vegaEmbed('#vis', spec, {actions: true}).catch(function(err) {
+      document.getElementById('vis').innerHTML = '<pre style="color:red;">' + err + '</pre>';
+    });
+  </script>
+</body>
+</html>
